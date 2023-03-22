@@ -443,7 +443,6 @@
                 return array;
               }
 
-              // TODO(jmerm): consider randomizing neighbor discovery here
             function ExploreNeighbors(node) {
               let moves = ["B", "L", "U", "R", "D", "F", "B'", "L'", "U'", "R'", "D'", "F'", "B2", "L2", "U2", "R2", "D2", "F2"]
               shuffle(moves);
@@ -468,7 +467,6 @@
               return turn[0];
             }
 
-              // TODO(jmerm): consider randomizing neighbor discovery here
             function ExploreNeighborsBackward(node) {
               let moves = ["B", "L", "U", "R", "D", "F", "B'", "L'", "U'", "R'", "D'", "F'", "B2", "L2", "U2", "R2", "D2", "F2"]
               shuffle(moves);
@@ -484,8 +482,6 @@
               return neighbors;
             }
 
-            // TODO(jmerm): plumb in a feature to track the last turned face and skip double
-            // turns.
             function Mitm(cube1, cube2) {
               if (cube1 == cube2) {
                 return [];

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bandaged Loops</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous"></script>
+    <style>
+        table {
+            border-spacing: 0;
+            line-height: 0.84em;
+            margin: 0 auto
+        }
+
+        td {
+            text-align: center;
+            font-family: monospace;
+            font-size: 1em;
+            overflow-y: hidden;
+            padding: 0;
+            margin: 0;
+        }
+
+        .blue {
+            background-color: rgb(74, 74, 247);
+        }
+
+        .grey {
+            background-color: rgb(227, 222, 222);
+        }
+
+        .orange {
+            background-color: orange;
+        }
+
+        .red {
+            background-color: red;
+        }
+
+        .green {
+            background-color: green;
+        }
+
+        .yellow {
+            background-color: yellow;
+        }
+    </style>
+
+    <script>
+
+        window.onload = function () {
+
+            function constructCelltable(id) {
+                var celltable = document.getElementById(id)
+
+                const CellType = {
+                    Number: 0,
+                    HorizontalEdge: 1,
+                    VerticalEdge: 2,
+                    Empty: 3,
+                    Plus: 4,
+                };
+
+                function makeCell(cellType, idNumber, initColor) {
+                    let cell = document.createElement('td');
+                    cell.classList.add(initColor);
+                    var id = "";
+                    if (cellType == CellType.Number) {
+                        cell.innerText = "";
+                        cell.classList.add("cell");
+                        id += "c";
+                    } else if (cellType == CellType.HorizontalEdge) {
+                        cell.innerText = "──";
+                        cell.classList.add("edge");
+                        id += "e";
+                    } else if (cellType == CellType.VerticalEdge) {
+                        cell.innerText = "│";
+                        cell.classList.add("edge");
+                        id += "e";
+                    } else if (cellType == CellType.Plus) {
+                        // cell.innerText = "┼";
+                        cell.classList.add("plus");
+                    }
+
+                    id += String(idNumber).padStart(2, "0");
+                    id += initColor;
+                    cell.id = id;
+
+                    return cell;
+                }
+
+                function makeFiveEmpties() {
+                    return [makeCell(CellType.Empty, 0, "white"),
+                        , makeCell(CellType.Empty, 0, "white"),
+                        , makeCell(CellType.Empty, 0, "white"),
+                        , makeCell(CellType.Empty, 0, "white"),
+                        , makeCell(CellType.Empty, 0, "white")];
+                }
+
+                function makeFiveCells(ls, color) {
+                    return [makeCell(CellType.Number, ls.shift(), color),
+                        , makeCell(CellType.VerticalEdge, ls.shift(), color),
+                        , makeCell(CellType.Number, ls.shift(), color),
+                        , makeCell(CellType.VerticalEdge, ls.shift(), color),
+                        , makeCell(CellType.Number, ls.shift(), color)];
+                }
+
+                function makeFiveEdges(ls, color) {
+                    return [makeCell(CellType.HorizontalEdge, ls.shift(), color),
+                        , makeCell(CellType.Plus, 0, color),
+                        , makeCell(CellType.HorizontalEdge, ls.shift(), color),
+                        , makeCell(CellType.Plus, 0, color),
+                        , makeCell(CellType.HorizontalEdge, ls.shift(), color)];
+                }
+
+                function makeRowEmptyCells(ls, color) {
+                    let row = document.createElement('tr');
+                    makeFiveEmpties().forEach(el => row.appendChild(el));
+                    makeFiveCells(ls, color).forEach(el => row.appendChild(el));
+                    makeFiveEmpties().forEach(el => row.appendChild(el));
+                    makeFiveEmpties().forEach(el => row.appendChild(el));
+                    return row;
+                }
+
+                function makeRowEmptyEdges(ls, color) {
+                    let row = document.createElement('tr');
+                    makeFiveEmpties().forEach(el => row.appendChild(el));
+                    makeFiveEdges(ls, color).forEach(el => row.appendChild(el));
+                    makeFiveEmpties().forEach(el => row.appendChild(el));
+                    makeFiveEmpties().forEach(el => row.appendChild(el));
+                    return row;
+                }
+
+                function makeRowFullCells(lsls, colorls) {
+                    let row = document.createElement('tr');
+                    makeFiveCells(lsls.shift(), colorls.shift()).forEach(el => row.appendChild(el));
+                    makeFiveCells(lsls.shift(), colorls.shift()).forEach(el => row.appendChild(el));
+                    makeFiveCells(lsls.shift(), colorls.shift()).forEach(el => row.appendChild(el));
+                    makeFiveCells(lsls.shift(), colorls.shift()).forEach(el => row.appendChild(el));
+                    return row;
+                }
+
+                function makeRowFullEdges(lsls, colorls) {
+                    let row = document.createElement('tr');
+                    makeFiveEdges(lsls.shift(), colorls.shift()).forEach(el => row.appendChild(el));
+                    makeFiveEdges(lsls.shift(), colorls.shift()).forEach(el => row.appendChild(el));
+                    makeFiveEdges(lsls.shift(), colorls.shift()).forEach(el => row.appendChild(el));
+                    makeFiveEdges(lsls.shift(), colorls.shift()).forEach(el => row.appendChild(el));
+                    return row;
+                }
+
+                celltable.appendChild(makeRowEmptyCells([9, 11, 8, 10, 7], "blue"))
+                celltable.appendChild(makeRowEmptyEdges([20, 19, 18], "blue"));
+                celltable.appendChild(makeRowEmptyCells([30, 32, 29, 31, 28], "blue"))
+                celltable.appendChild(makeRowEmptyEdges([41, 40, 39], "blue"));
+                celltable.appendChild(makeRowEmptyCells([51, 53, 50, 52, 49], "blue"))
+                celltable.appendChild(makeRowFullCells([[11, 20, 32, 41, 53], [41, 53, 40, 52, 39], [52, 39, 31, 18, 10], [18, 10, 19, 11, 20]], ["orange", "grey", "red", "yellow"]));
+                celltable.appendChild(makeRowFullEdges([[9, 30, 51], [51, 50, 49], [49, 28, 7], [7, 8, 9]], ["orange", "grey", "red", "yellow"]));
+                celltable.appendChild(makeRowFullCells([[6, 17, 27, 38, 48], [38, 48, 37, 47, 36], [47, 36, 26, 15, 5], [15, 5, 16, 6, 17]], ["orange", "grey", "red", "yellow"]));
+                celltable.appendChild(makeRowFullEdges([[4, 25, 46], [46, 45, 44], [44, 23, 2], [2, 3, 4]], ["orange", "grey", "red", "yellow"]));
+                celltable.appendChild(makeRowFullCells([[1, 14, 22, 35, 43], [35, 43, 34, 42, 33], [42, 33, 21, 12, 0], [12, 0, 13, 1, 14]], ["orange", "grey", "red", "yellow"]));
+                celltable.appendChild(makeRowEmptyCells([46, 43, 45, 42, 44], "green"))
+                celltable.appendChild(makeRowEmptyEdges([35, 34, 33], "green"));
+                celltable.appendChild(makeRowEmptyCells([25, 22, 24, 21, 23], "green"))
+                celltable.appendChild(makeRowEmptyEdges([14, 13, 12], "green"));
+                celltable.appendChild(makeRowEmptyCells([4, 1, 3, 0, 2], "green"))
+            }
+
+            constructCelltable("celltable");
+
+            function valFromDict(dict) {
+                let ret = 0n;
+                for (const k of Object.keys(dict)) {
+                    let val = dict[k];
+                    if (val == false) {
+                        continue;
+                    }
+                    ret |= (1n << BigInt(k));
+                }
+                return ret;
+            }
+
+            function makeNResults(n, sig, path_len) {
+              let algs = []
+              for (let i = 0; i < n; i++) {
+                let alg = SimplifySequence(NOutAndBack(sig, path_len));
+                if (alg.length > 0) {
+                  algs.push(alg);
+                }
+              }
+              algs = Array.from(new Set(algs.map(JSON.stringify)), JSON.parse)
+              algs.sort(function(a, b){
+                return a.length - b.length;
+              });
+
+              let ret = [];
+              algs.forEach (function callback(alg) {
+                let stringified_alg = alg.join(" ")
+
+                let a = document.createElement('a');
+                a.appendChild(document.createTextNode(stringified_alg));
+                a.href = "https://alpha.twizzle.net/explore/?puzzle=3x3x3&alg=" + encodeURIComponent(stringified_alg);
+
+                var node = document.createElement('li');
+                node.appendChild(a);
+                ret.push(node)
+              })
+              return ret;
+            }
+
+            function updateResult() {
+                let sig = valFromDict(beenClicked);
+
+                let num_algs_field = document.getElementById("num_algs");
+                let num_algs = (num_algs_field == null) ? 1 : num_algs_field.value;
+                if (num_algs == "" || num_algs <= 0) {
+                  num_algs = 1;
+                }
+
+                let path_len_field = document.getElementById("path_len");
+                let path_len = (path_len_field == null) ? 1 : path_len_field.value;
+
+                document.getElementById("result").replaceChildren(...makeNResults(num_algs, sig, path_len));
+            }
+
+            function printBeenClicked() {
+
+                let ret = 0n;
+                for (const k of Object.keys(beenClicked)) {
+                    let val = beenClicked[k];
+                    if (val == false) {
+                        continue;
+                    }
+                    ret |= (1n << BigInt(k));
+                }
+
+                document.getElementById("beenClicked").innerText = "0x" + ret.toString(16);
+
+                updateResult();
+            }
+
+            beenClicked = {}
+
+            function setCallbacks() {
+                for (var i = 0; i <= 53; i++) {
+                    for (var color of ["red", "blue", "green", "grey", "yellow", "orange"]) {
+                        var id = "e" + String(i).padStart(2, '0') + color;
+                        var edgeElement = document.getElementById(id);
+                        if (edgeElement == null) {
+                            continue;
+                        }
+                        beenClicked[i] = false;
+                        edgeElement.onclick = function (event) {
+                            var elementId = event.target.id;
+                            var numberInfix = elementId.slice(1).slice(0, 2);
+                            var number = Number(numberInfix);
+                            var elements = document.querySelectorAll('[id^="' + 'e' + numberInfix + '"]');
+                            var currTruth = beenClicked[number];
+                            for (const el of elements) {
+                                if (!currTruth) {
+                                    el.style.color = window.getComputedStyle(el).backgroundColor;
+                                } else {
+                                    el.style.color = 'black';
+                                }
+                            }
+                           beenClicked[number] = !currTruth;
+                           printBeenClicked();
+                        };
+                    }
+                }
+
+                for (const v of [29, 27, 37, 26, 16, 24]) {
+                    for (var color of ["red", "blue", "green", "grey", "yellow", "orange"]) {
+                        var id = "c" + String(v).padStart(2, '0') + color;
+                        var cellElement = document.getElementById(id);
+                        if (cellElement == null) {
+                            continue;
+                        }
+                        cellElement.onclick = function (event) {
+                            var element = event.target;
+                            var elementId = element.id;
+                            var numberInfix = elementId.slice(1).slice(0, 2);
+                            var number = 0 + numberInfix;
+                            var currTruth = beenClicked[number];
+                            if (!currTruth) {
+                                element.innerText = "x";
+                            } else {
+                                element.innerText = "";
+                            }
+                            beenClicked[number] = !currTruth;
+
+
+                            printBeenClicked();
+                        }
+                    }
+                }
+
+              document.getElementById("path_len").onchange = function () {
+                printBeenClicked();
+              }
+              document.getElementById("num_algs").onchange = function () {
+                printBeenClicked();
+              }
+            }
+
+            setCallbacks();
+
+            function MakeBitSet(ls) {
+                let ret = 0n;
+                for (let i of ls) {
+                    ret |= (1n << BigInt(i));
+                }
+                return ret;
+            }
+
+            // Gets bit at index |idx| from a bitset.
+            function GetBit(cube, idx) {
+                return cube & (1n << idx);
+            }
+
+
+            // Sets the bit at index |idx| to match the truthiness of |val|.
+            function SetBit(cube, idx, val) {
+                let mask = 1n << idx;
+                if (val) {
+                    return cube | mask;
+                } else {
+                    return cube & ~mask;
+                }
+            }
+
+            // cycles bits according to perms.
+            // Could maybe be optimized by some special purpose code for each permutation
+            // from http://programming.sirrida.de/bit_perm.html#calculator
+            function ApplyPermutations(cube, permutations) {
+                for (let perm of permutations) {
+                    if (perm.length == 0) {
+                        break;
+                    }
+                    let start = GetBit(cube, perm[0]);
+                    for (let i = 0; i < perm.length - 1; i++) {
+                        cube = SetBit(cube, perm[i], GetBit(cube, perm[i + 1]));
+                    }
+                    cube = SetBit(cube, perm[perm.length - 1], start);
+                }
+                return cube;
+            }
+
+
+
+            // Each list corresponds to the set of bonds which would block that face if they
+            // are present. The helper converts them to a bitset which allows us to check if
+            // a face is blocked with a single bitwise operation.
+            const blockers = {
+                B: MakeBitSet([7n, 8n, 9n, 28n, 29n, 30n, 49n, 50n, 51n]),
+                L: MakeBitSet([1n, 6n, 11n, 22n, 27n, 32n, 43n, 48n, 53n]),
+                U: MakeBitSet([33n, 34n, 35n, 36n, 37n, 38n, 39n, 40n, 41n]),
+                R: MakeBitSet([0n, 5n, 10n, 21n, 26n, 31n, 42n, 47n, 52n]),
+                D: MakeBitSet([12n, 13n, 14n, 15n, 16n, 17n, 18n, 19n, 20n]),
+                F: MakeBitSet([2n, 3n, 4n, 23n, 24n, 25n, 44n, 45n, 46n]),
+            }
+
+
+            // Cube is a BigInt bitset. Turn is one of {B,L,U,R,D,F}
+            // Returns whether that face is blocked.
+            function CanDoTurn(cube, turn) {
+                return !(cube & blockers[turn[0]])
+            }
+
+            // CanDoTurn must be called before calling this method.
+            // Cube is a BigInt bitset. Turn is one of {B,L,U,R,D,F}
+            // Returns a bitset representing the cube after that turn has been performed
+            // Turns can be thought of as bit permutation that move bonds to new locations
+            // which means I can use my favorite tool (
+            function DoTurn(cube, turn) {
+                if (turn.length > 1) {
+                    if (turn[1] == "'") {
+                        return DoTurn(DoTurn(DoTurn(cube, turn[0]), turn[0]), turn[0])
+                    } else if (turn[1] == '2') {
+                        return DoTurn(DoTurn(cube, turn[0]), turn[0])
+                    }
+                }
+                switch (turn) {
+                    case 'B':
+                        return ApplyPermutations(cube, [
+                            [10n, 20n, 53n, 39n],
+                            [11n, 41n, 52n, 18n],
+                            [19n, 32n, 40n, 31n]
+                        ]);
+                    case 'L':
+                        return ApplyPermutations(cube, [
+                            [4n, 35n, 51n, 20n],
+                            [9n, 14n, 46n, 41n],
+                            [17n, 25n, 38n, 30n]
+                        ]);
+                    case 'U':
+                        return ApplyPermutations(cube, [
+                            [42n, 49n, 53n, 46n],
+                            [43n, 44n, 52n, 51n],
+                            [45n, 47n, 50n, 48n]
+                        ]);
+                    case 'R':
+                        return ApplyPermutations(cube, [
+                            [2n, 18n, 49n, 33n],
+                            [7n, 39n, 44n, 12n],
+                            [15n, 28n, 36n, 23n]
+                        ]);
+                    case 'D':
+                        return ApplyPermutations(cube, [
+                            [0n, 4n, 11n, 7n],
+                            [1n, 9n, 10n, 2n],
+                            [3n, 6n, 8n, 5n]
+                        ]);
+                    case 'F':
+                        return ApplyPermutations(cube, [
+                            [0n, 33n, 43n, 14n],
+                            [1n, 12n, 42n, 35n],
+                            [13n, 21n, 34n, 22n]
+                        ]);
+                }
+                console.log('unexpected turn id, ', turn);
+                return cube;
+            }
+
+              function shuffle(array) {
+                let currentIndex = array.length,  randomIndex;
+
+                // While there remain elements to shuffle.
+                  while (currentIndex != 0) {
+
+                    // Pick a remaining element.
+                      randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex--;
+
+                    // And swap it with the current element.
+                      [array[currentIndex], array[randomIndex]] = [
+                        array[randomIndex], array[currentIndex]];
+                  }
+
+                return array;
+              }
+
+              // TODO(jmerm): consider randomizing neighbor discovery here
+            function ExploreNeighbors(node) {
+              let moves = ["B", "L", "U", "R", "D", "F", "B'", "L'", "U'", "R'", "D'", "F'", "B2", "L2", "U2", "R2", "D2", "F2"]
+              shuffle(moves);
+              let neighbors = [];
+              for (let c of moves) {
+                if (CanDoTurn(node.id, c) && node.last_turn[0] != c[0]) {
+                  let turned = DoTurn(node.id, c);
+                  let path = node.path.slice();
+                  path.push(c)
+                  neighbors.push({id: turned, path: path, last_turn: c})
+                }
+              }
+              return neighbors;
+            }
+
+            function opposite(turn) {
+              if (turn.length == 1) {
+                return turn + "'";
+              } else if (turn[1] == '2') {
+                return turn;
+              }
+              return turn[0];
+            }
+
+              // TODO(jmerm): consider randomizing neighbor discovery here
+            function ExploreNeighborsBackward(node) {
+              let moves = ["B", "L", "U", "R", "D", "F", "B'", "L'", "U'", "R'", "D'", "F'", "B2", "L2", "U2", "R2", "D2", "F2"]
+              shuffle(moves);
+              let neighbors = [];
+              for (let c of moves) {
+                if (CanDoTurn(node.id, c) && node.last_turn[0] != c[0]) {
+                  let turned = DoTurn(node.id, c);
+                  let path = node.path.slice();
+                  path.unshift(opposite(c));
+                  neighbors.push({id: turned, path: path, last_turn: c })
+                }
+              }
+              return neighbors;
+            }
+
+            // TODO(jmerm): plumb in a feature to track the last turned face and skip double
+            // turns.
+            function Mitm(cube1, cube2) {
+              if (cube1 == cube2) {
+                return [];
+              }
+              let fwd_q = [{id: cube1, path: [], last_turn: "-"}];
+              let fwd_seen = new Map();
+              fwd_seen.set(cube1, []);
+
+              let bwd_q = [{id: cube2, path: [], last_turn: "-"}];
+              let bwd_seen = new Map();
+              bwd_seen.set(cube2, []);
+
+              let target_depth = 1;
+
+              while (fwd_q.length > 0 || bwd_q.length > 0) {
+                // Explore forward
+                while (fwd_q.length > 0 && fwd_q[0].path.length < target_depth) {
+                  let next = fwd_q.shift();
+                  let neighbors = ExploreNeighbors(next);
+                  for (let neighbor of neighbors) {
+                    // New cell, note we've seen it and add it to the queue to explore more
+                    if (!fwd_seen.has(neighbor.id)) {
+                      fwd_seen.set(neighbor.id, neighbor.path);
+                      fwd_q.push(neighbor);
+                      if (bwd_seen.has(neighbor.id)) {
+                        return neighbor.path.concat(bwd_seen.get(neighbor.id));
+                      }
+                    }
+                  }
+                }
+
+                // Explore backward
+                while (bwd_q.length > 0 && bwd_q[0].path.length < target_depth) {
+                  let next = bwd_q.shift();
+                  let neighbors = ExploreNeighborsBackward(next);
+                  for (let neighbor of neighbors) {
+                    // New cell, note we've seen it and add it to the queue to explore more
+                    if (!bwd_seen.has(neighbor.id)) {
+                      bwd_seen.set(neighbor.id, neighbor.path);
+                      bwd_q.push(neighbor);
+                      if (fwd_seen.has(neighbor.id)) {
+                        return fwd_seen.get(neighbor.id).concat(neighbor.path);
+                      }
+                    }
+                  }
+                }
+
+                target_depth++;
+              }
+
+              return "No paths found";
+            }
+
+            function NOutAndBack(cube, dist) {
+              let turned = cube;
+              let last = '0'
+              let path = [];
+              let moves = ["B", "L", "U", "R", "D", "F", "B'", "L'", "U'", "R'", "D'", "F'", "B2", "L2", "U2", "R2", "D2", "F2"];
+              for (let i = 0; i < dist; i++) {
+                let filtered = moves.filter(move => (CanDoTurn(turned, move) && move[0] != last[0]));
+                let move = last;
+                if (filtered.length > 0) {
+                  move = filtered[Math.floor(Math.random() * filtered.length)];
+                }
+                turned = DoTurn(turned, move);
+                path.push(move);
+                last = move;
+              }
+              return path.concat(Mitm(turned, cube));
+            }
+
+            function NumTurns(turn) {
+              if (turn[1] == "'") {
+                return -1;
+              } else if (turn[1] == '2') {
+                return 2
+              } else {
+                return 1;
+              }
+            }
+
+            function TurnToSuffix(amount) {
+              if (amount == 1) {
+                return "";
+              } else if (amount == 2) {
+                return "2";
+              } else {
+                return "'";
+              }
+            }
+
+            function SimplifySequenceOnce(moves) {
+              let ret = [];
+              for (let i = 0; i < moves.length; i++) {
+                let face = moves[i][0];
+                let sum = NumTurns(moves[i]);
+                i++;
+                while (i < moves.length && moves[i][0] == face) {
+                  sum += NumTurns(moves[i])
+                  i++;
+                }
+                i--;
+                let amount = ((sum % 4) + 4) % 4
+                if (amount != 0) {
+                  ret.push(face + TurnToSuffix(amount))
+                }
+              }
+              return ret
+            }
+
+            // I hate js.
+            function ArrayEquals(a, b) {
+              return Array.isArray(a) &&
+                Array.isArray(b) &&
+                a.length === b.length &&
+                a.every((val, index) => val === b[index]);
+            }
+
+            function CanonicalOrder(seq) {
+              for (let i = 0; i < seq.length - 1; i++) {
+                if ((seq[i][0] == 'D' && seq[i+1][0] == 'U') ||
+                    (seq[i][0] == 'L' && seq[i+1][0] == 'R') ||
+                    (seq[i][0] == 'B' && seq[i+1][0] == 'F')) {
+                  tmp = seq[i];
+                  seq[i] = seq[i+1];
+                  seq[i+1] = tmp;
+                }
+              }
+            }
+
+            function SimplifySequence(seq) {
+              let before = seq;
+              let after = SimplifySequenceOnce(seq);
+              CanonicalOrder(after);
+              while (!ArrayEquals(before, after) && after != []) {
+                before = after;
+                after = SimplifySequenceOnce(before);
+                CanonicalOrder(after);
+              }
+
+              return after
+            }
+        }
+
+    </script>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row text-center py-5">
+            <div class="col-12 text-center" id="left">
+                <h1> Bandaged Loops </h1>
+            </div>
+        </div>
+        <div class="row ">
+            <div class="col-12 col-lg-6 " id="left">
+                <div class="card">
+                    <div class="card-body">
+                        <table id="celltable"></table>
+                        <hr />
+                        <h2 id="beenClicked">0x0</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6 " id="right">
+                <div class="card">
+                    <div class="card-body">
+                        <label for="path_len">Path length</label><br>
+                        <input type="number" id="path_len" name="path_len" min="1" value="10"`>
+                        <hr />
+                        <label for="num_algs"># Trials</label><br>
+                        <input type="number" id="num_algs" name="num_algs" min="1" value="10"`>
+                        <hr />
+                        More stuff goes here
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br />
+        <div class="row ">
+            <div class="col-12" id="">
+                <div class="card">
+                    <div class="card-body">
+                        <ul id="result">_</ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br />
+        <div class="row ">
+          <div class="card mb-3">
+            <div class="row no-gutters">
+              <div class="col-md-3">
+                <img src="key.svg" alt="Key to the colorscheme">
+              </div>
+              <div class="col-md-9">
+                <div class="card-body">
+                  <p class="card-text">
+                  Designed and built by 
+                  <a class="blue-text text-darken-3" 
+                     href="http://joshmermelstein.com/">
+                    Josh Mermelstein
+                  </a> and  
+                  <a class="blue-text text-darken-3" href="http://jbuckland.com/">
+                    James Buckland
+                  </a>
+                  <p class="card-text"><small class="text-muted">
+                    Source code on <a class="blue-text text-darken-3" 
+                                      href="https://github.com/joshmermel/bandaged-loops">
+                      GitHub</a>.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
